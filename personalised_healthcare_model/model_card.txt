@@ -1,0 +1,67 @@
+
+PERSONALISED HEALTHCARE RECOMMENDATION SYSTEM
+============================================================
+
+MODEL TYPE
+Calibrated multinomial logistic regression.
+
+TARGET
+Health_Risk
+
+RISK CLASSES
+['High', 'Low', 'Moderate']
+
+INPUT FEATURES
+27
+
+FINAL FEATURES
+['Age', 'BMI', 'Cholesterol', 'Glucose_Level', 'HbA1c', 'Systolic_BP', 'Diastolic_BP', 'LDL', 'HDL', 'Triglycerides', 'CRP', 'eGFR', 'Waist_Circumference', 'Resting_Heart_Rate', 'HRV', 'Smoking_Status', 'Alcohol_Consumption', 'Physical_Activity_Level', 'Diet_Type', 'Sleep_Quality', 'Sleep_Hours', 'PRS_Cardiometabolic', 'PRS_Type2Diabetes', 'APOE_e4_Carrier', 'BRCA_Pathogenic_Variant', 'Family_History_CVD', 'Family_History_T2D']
+
+TEST SET
+400 participants
+
+PERFORMANCE
+------------------------------------------------------------
+Accuracy              : 0.9050
+Balanced Accuracy     : 0.8888
+Macro F1              : 0.8934
+Weighted F1            : 0.8998
+Macro ROC-AUC          : 0.9815
+Log Loss              : 0.4366
+
+SYSTEM COMPONENTS
+------------------------------------------------------------
+1. Patient data input
+2. Data preprocessing
+3. Risk classification
+4. Probability estimation
+5. Model explainability
+6. Clinical safety gate
+7. Recommendation prioritisation
+8. What-if model sensitivity
+9. Personalised report generation
+
+IMPORTANT LIMITATIONS
+------------------------------------------------------------
+This system is a research prototype.
+
+It is NOT a diagnostic system.
+
+It is NOT a treatment recommendation system.
+
+Model contributions represent predictive model behaviour
+and should not be interpreted as causal effects.
+
+What-if scenarios represent model sensitivity rather than
+causal treatment effects.
+
+Clinical thresholds and recommendation rules require
+appropriate clinical validation before real-world deployment.
+
+External validation in an independent population is required.
+
+The dataset may contain synthetic or algorithmically generated
+relationships; therefore, excellent internal performance does
+not establish clinical validity or generalisability.
+
+The model should not replace professional medical assessment.

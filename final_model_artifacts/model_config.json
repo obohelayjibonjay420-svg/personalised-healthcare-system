@@ -1,0 +1,37 @@
+{
+  "features": [
+    "Age",
+    "BMI",
+    "Cholesterol",
+    "Glucose_Level",
+    "HbA1c",
+    "Systolic_BP",
+    "Diastolic_BP",
+    "LDL",
+    "HDL",
+    "Triglycerides",
+    "CRP",
+    "eGFR",
+    "Waist_Circumference",
+    "Resting_Heart_Rate",
+    "HRV",
+    "Smoking_Status",
+    "Alcohol_Consumption",
+    "Physical_Activity_Level",
+    "Diet_Type",
+    "Sleep_Quality",
+    "Sleep_Hours",
+    "PRS_Cardiometabolic",
+    "PRS_Type2Diabetes",
+    "APOE_e4_Carrier",
+    "BRCA_Pathogenic_Variant",
+    "Family_History_CVD",
+    "Family_History_T2D"
+  ],
+  "n_features": 27,
+  "classes": [
+    "High",
+    "Low",
+    "Moderate"
+  ]
+}
