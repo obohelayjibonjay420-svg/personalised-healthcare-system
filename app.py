@@ -181,6 +181,165 @@ div[data-testid="stAlert"]{border-radius:15px;}
 </style>
 """, unsafe_allow_html=True)
 
+
+st.markdown("""
+<style>
+/* =========================================================
+   FINAL LIGHT THEME OVERRIDE
+   Prevents System/Dark browser theme from reducing contrast.
+   ========================================================= */
+
+html, body, .stApp, [data-testid="stAppViewContainer"],
+[data-testid="stHeader"], [data-testid="stToolbar"] {
+    color-scheme: light !important;
+}
+
+.stApp {
+    background:
+        radial-gradient(700px 420px at 100% 0%, rgba(124,58,237,.10), transparent 65%),
+        radial-gradient(620px 420px at 0% 8%, rgba(37,99,235,.08), transparent 62%),
+        radial-gradient(520px 360px at 82% 92%, rgba(8,145,178,.06), transparent 65%),
+        linear-gradient(135deg, #F8FBFF 0%, #F6F8FC 50%, #FBF9FF 100%) !important;
+    color: #14213D !important;
+}
+
+/* Main text — explicit contrast */
+.main, .main * {
+    color: #14213D;
+}
+
+.main p, .main li, .main span {
+    color: #526176;
+}
+
+/* Sidebar — the main problem visible in the screenshot */
+[data-testid="stSidebar"],
+[data-testid="stSidebar"] > div,
+[data-testid="stSidebar"] * {
+    color: #172033 !important;
+}
+
+[data-testid="stSidebar"] {
+    background: linear-gradient(180deg, #FFFFFF 0%, #F5F8FC 100%) !important;
+    border-right: 1px solid #E2E8F0 !important;
+}
+
+[data-testid="stSidebar"] [data-testid="stMarkdownContainer"] p,
+[data-testid="stSidebar"] [data-testid="stMarkdownContainer"] span,
+[data-testid="stSidebar"] label,
+[data-testid="stSidebar"] [role="radiogroup"] label,
+[data-testid="stSidebar"] [role="radio"] {
+    color: #172033 !important;
+    opacity: 1 !important;
+}
+
+[data-testid="stSidebar"] [role="radio"] p,
+[data-testid="stSidebar"] [role="radio"] span {
+    color: #344054 !important;
+    opacity: 1 !important;
+}
+
+[data-testid="stSidebar"] [role="radio"][aria-checked="true"] p,
+[data-testid="stSidebar"] [role="radio"][aria-checked="true"] span {
+    color: #2563EB !important;
+    font-weight: 750 !important;
+}
+
+[data-testid="stSidebar"] [data-testid="stCaptionContainer"] *,
+[data-testid="stSidebar"] small {
+    color: #667085 !important;
+}
+
+/* Sidebar success box */
+[data-testid="stSidebar"] [data-testid="stAlert"] * {
+    color: #047857 !important;
+}
+
+/* Header/menu area */
+[data-testid="stHeader"] {
+    background: rgba(255,255,255,.88) !important;
+}
+
+/* Inputs */
+[data-baseweb="input"] input,
+[data-baseweb="select"] *,
+[data-baseweb="select"] input {
+    color: #172033 !important;
+}
+
+[data-baseweb="select"] > div {
+    background: #FFFFFF !important;
+    border-color: #D9E2EC !important;
+}
+
+/* Labels and help text */
+.stSelectbox label, .stNumberInput label,
+.stTextInput label, .stMultiSelect label {
+    color: #172033 !important;
+}
+
+/* Tabs */
+.stTabs [data-baseweb="tab"] {
+    color: #526176 !important;
+}
+.stTabs [data-baseweb="tab"][aria-selected="true"] {
+    color: #2563EB !important;
+}
+
+/* Metric text */
+[data-testid="stMetricLabel"],
+[data-testid="stMetricValue"],
+[data-testid="stMetricDelta"] {
+    opacity: 1 !important;
+}
+[data-testid="stMetricLabel"] { color: #667085 !important; }
+[data-testid="stMetricValue"] { color: #14213D !important; }
+
+/* Expanders */
+[data-testid="stExpander"] summary,
+[data-testid="stExpander"] summary p,
+[data-testid="stExpander"] summary span {
+    color: #172033 !important;
+}
+
+/* Dataframe */
+[data-testid="stDataFrame"] * {
+    color: #172033 !important;
+}
+
+/* Make interactive controls visually crisp */
+.stButton > button, .stDownloadButton > button {
+    color: #FFFFFF !important;
+}
+
+/* Keep the background decorative, never text decorative */
+.stApp:before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    opacity: .22;
+    background-image:
+        linear-gradient(rgba(37,99,235,.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(37,99,235,.035) 1px, transparent 1px);
+    background-size: 40px 40px;
+    mask-image: linear-gradient(to bottom, black, transparent 88%);
+}
+
+/* Mobile */
+@media (max-width: 760px) {
+    .block-container {
+        padding: .65rem .72rem 1.4rem !important;
+    }
+    [data-testid="stSidebar"] {
+        min-width: 0 !important;
+    }
+}
+</style>
+""", unsafe_allow_html=True)
+
+
 # ============================================================
 # LOAD MODEL
 # ============================================================
