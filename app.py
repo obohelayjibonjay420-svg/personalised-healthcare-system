@@ -23,226 +23,160 @@ st.markdown("""
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Bengali:wght@400;500;600;700;800&display=swap');
 
 :root{
-    --ink:#172033;
-    --muted:#667085;
-    --faint:#98A2B3;
-    --line:#E7ECF3;
-    --bg:#F7F9FC;
-    --card:#FFFFFF;
-    --blue:#2563EB;
-    --blue-soft:#EEF4FF;
-    --purple:#7C3AED;
-    --purple-soft:#F3EEFF;
-    --green:#059669;
-    --green-soft:#ECFDF5;
-    --amber:#D97706;
-    --amber-soft:#FFFBEB;
-    --red:#DC2626;
-    --red-soft:#FEF2F2;
-}
-
-.stApp{
-    background:
-      radial-gradient(circle at 92% 3%, rgba(124,58,237,.055), transparent 23%),
-      radial-gradient(circle at 4% 12%, rgba(37,99,235,.045), transparent 22%),
-      var(--bg);
-    color:var(--ink);
+ --ink:#14213D; --ink2:#253858; --muted:#667085; --faint:#98A2B3;
+ --line:rgba(148,163,184,.22); --white:rgba(255,255,255,.88);
+ --blue:#2563EB; --cyan:#0891B2; --purple:#7C3AED;
+ --green:#059669; --amber:#D97706; --red:#DC2626;
 }
 
 html,body,[class*="css"]{
-    font-family:"Inter","Noto Sans Bengali",sans-serif;
+ font-family:"Inter","Noto Sans Bengali",sans-serif;
 }
-
+.stApp{
+ color:var(--ink);
+ background:
+   radial-gradient(circle at 8% 8%,rgba(37,99,235,.10),transparent 22%),
+   radial-gradient(circle at 92% 8%,rgba(124,58,237,.10),transparent 24%),
+   radial-gradient(circle at 78% 88%,rgba(8,145,178,.07),transparent 22%),
+   linear-gradient(135deg,#F8FBFF 0%,#F6F7FB 52%,#FBF9FF 100%);
+ background-attachment:fixed;
+}
+.stApp:before{
+ content:""; position:fixed; inset:0; pointer-events:none; z-index:0;
+ opacity:.28;
+ background-image:
+   linear-gradient(rgba(37,99,235,.035) 1px,transparent 1px),
+   linear-gradient(90deg,rgba(37,99,235,.035) 1px,transparent 1px);
+ background-size:38px 38px;
+ mask-image:linear-gradient(to bottom,black,transparent 85%);
+}
 .block-container{
-    max-width:1480px;
-    padding:1rem 2rem 2.5rem;
+ max-width:1500px; padding:1rem 2rem 2.5rem; position:relative; z-index:1;
 }
-
-h1,h2,h3,h4{
-    color:var(--ink)!important;
-    letter-spacing:-.025em;
-}
+h1,h2,h3,h4{color:var(--ink)!important;letter-spacing:-.03em;}
+p,span,label,div{scrollbar-width:thin;}
 
 .hero{
-    padding:2rem 2.2rem;
-    border:1px solid var(--line);
-    border-radius:26px;
-    background:
-      radial-gradient(circle at 92% 20%, rgba(124,58,237,.14), transparent 25%),
-      radial-gradient(circle at 72% 110%, rgba(37,99,235,.10), transparent 30%),
-      linear-gradient(135deg,#fff 0%,#f6f9ff 54%,#faf7ff 100%);
-    box-shadow:0 18px 45px rgba(16,24,40,.065);
-    margin-bottom:1.25rem;
+ position:relative; overflow:hidden; padding:2.2rem 2.3rem;
+ border:1px solid rgba(255,255,255,.75); border-radius:28px;
+ background:
+   linear-gradient(120deg,rgba(255,255,255,.94),rgba(247,250,255,.90) 55%,rgba(249,246,255,.94));
+ box-shadow:0 24px 70px rgba(16,24,40,.09),inset 0 1px 0 rgba(255,255,255,.95);
+ margin-bottom:1.35rem;
 }
-
+.hero:after{
+ content:""; position:absolute; width:220px;height:220px;right:-70px;top:-90px;
+ border-radius:50%;
+ background:linear-gradient(135deg,rgba(37,99,235,.18),rgba(124,58,237,.08));
+ filter:blur(2px); animation:floatOrb 7s ease-in-out infinite;
+}
+.hero:before{
+ content:""; position:absolute; width:110px;height:110px;right:180px;bottom:-55px;
+ border-radius:50%; background:rgba(8,145,178,.10); filter:blur(3px);
+ animation:floatOrb2 9s ease-in-out infinite;
+}
 .eyebrow{
-    color:#51627A;
-    font-size:.72rem;
-    font-weight:800;
-    letter-spacing:.14em;
-    text-transform:uppercase;
+ color:#526681; font-size:.72rem; font-weight:800;
+ letter-spacing:.15em; text-transform:uppercase;
 }
-
 .hero-title{
-    margin:.25rem 0 0;
-    font-size:clamp(1.8rem,3.5vw,2.75rem);
-    font-weight:800;
-    letter-spacing:-.05em;
-    color:var(--ink)!important;
+ position:relative; z-index:1; margin:.3rem 0 0;
+ font-size:clamp(1.9rem,3.8vw,2.9rem); font-weight:800;
+ letter-spacing:-.055em; color:var(--ink)!important;
 }
-
 .hero-sub{
-    margin-top:.5rem;
-    color:#667085;
-    font-size:1rem;
+ position:relative; z-index:1; margin-top:.55rem;
+ color:#64748B; font-size:1rem; font-weight:500;
 }
 
-.card{
-    background:var(--card);
-    border:1px solid var(--line);
-    border-radius:18px;
-    padding:1.05rem 1.15rem;
-    box-shadow:0 7px 24px rgba(16,24,40,.045);
+.card,.metric-card{
+ background:var(--white); border:1px solid var(--line); border-radius:19px;
+ box-shadow:0 10px 32px rgba(15,23,42,.055);
+ backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px);
+ transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease;
 }
-
-.metric-card{
-    background:#fff;
-    border:1px solid var(--line);
-    border-radius:18px;
-    padding:1rem 1.05rem;
-    min-height:112px;
-    box-shadow:0 7px 24px rgba(16,24,40,.045);
+.card{padding:1.15rem 1.2rem;}
+.metric-card{padding:1rem 1.1rem;min-height:112px;}
+.card:hover,.metric-card:hover{
+ transform:translateY(-2px); box-shadow:0 16px 38px rgba(15,23,42,.08);
+ border-color:rgba(37,99,235,.18);
 }
-
 .metric-label{
-    color:#667085;
-    font-size:.74rem;
-    font-weight:700;
-    text-transform:uppercase;
-    letter-spacing:.08em;
+ color:#667085;font-size:.72rem;font-weight:800;
+ text-transform:uppercase;letter-spacing:.09em;
 }
-
-.metric-value{
-    color:var(--ink);
-    font-size:1.65rem;
-    font-weight:800;
-    margin-top:.25rem;
-}
-
-.metric-note{
-    color:#98A2B3;
-    font-size:.74rem;
-    margin-top:.15rem;
-}
-
+.metric-value{color:var(--ink);font-size:1.7rem;font-weight:800;margin-top:.25rem;}
+.metric-note{color:#98A2B3;font-size:.73rem;margin-top:.15rem;}
 .section-kicker{
-    color:#667085;
-    font-size:.73rem;
-    font-weight:800;
-    text-transform:uppercase;
-    letter-spacing:.11em;
-    margin-bottom:.2rem;
+ color:#667085;font-size:.72rem;font-weight:800;
+ text-transform:uppercase;letter-spacing:.12em;margin-bottom:.25rem;
 }
-
 .info-chip{
-    display:inline-block;
-    padding:.28rem .62rem;
-    border-radius:999px;
-    background:#F2F4F7;
-    border:1px solid #E4E7EC;
-    color:#475467;
-    font-size:.72rem;
-    font-weight:700;
-    margin:.12rem .18rem .12rem 0;
+ display:inline-block;padding:.3rem .68rem;border-radius:999px;
+ background:#F2F5FA;border:1px solid #E4E9F1;color:#475467;
+ font-size:.71rem;font-weight:750;margin:.12rem .18rem .12rem 0;
 }
-
 .risk-card{
-    padding:1.45rem;
-    border-radius:22px;
-    border:1px solid;
-    box-shadow:0 12px 34px rgba(16,24,40,.06);
+ padding:1.5rem;border-radius:23px;border:1px solid;
+ box-shadow:0 16px 42px rgba(15,23,42,.07);
 }
-
-.risk-high{background:linear-gradient(135deg,#fff7f7,#fff);border-color:#FECACA;}
-.risk-moderate{background:linear-gradient(135deg,#fffcf3,#fff);border-color:#FDE68A;}
-.risk-low{background:linear-gradient(135deg,#f3fdf8,#fff);border-color:#BBF7D0;}
-
-.risk-title{
-    font-size:.72rem;
-    font-weight:800;
-    letter-spacing:.12em;
-    color:#667085;
-    text-transform:uppercase;
-}
-
-.risk-number{
-    font-size:2.5rem;
-    font-weight:850;
-    letter-spacing:-.055em;
-    color:var(--ink);
-    margin-top:.25rem;
-}
-
-.stButton>button, .stDownloadButton>button{
-    border-radius:12px!important;
-    min-height:2.7rem;
-    font-weight:750!important;
-}
+.risk-high{background:linear-gradient(135deg,#FFF7F7,#FFFFFF);border-color:#FECACA;}
+.risk-moderate{background:linear-gradient(135deg,#FFFCF2,#FFFFFF);border-color:#FDE68A;}
+.risk-low{background:linear-gradient(135deg,#F1FCF7,#FFFFFF);border-color:#BBF7D0;}
+.risk-number{font-size:2.55rem;font-weight:850;letter-spacing:-.055em;color:var(--ink);margin-top:.25rem;}
+.risk-title{font-size:.72rem;font-weight:800;letter-spacing:.12em;color:#667085;text-transform:uppercase;}
 
 div[data-testid="stForm"]{
-    background:#fff;
-    border:1px solid var(--line);
-    border-radius:22px;
-    padding:1.15rem;
-    box-shadow:0 12px 35px rgba(16,24,40,.055);
+ background:rgba(255,255,255,.92); border:1px solid var(--line);
+ border-radius:23px;padding:1.15rem;
+ box-shadow:0 16px 45px rgba(15,23,42,.065);
 }
-
-[data-testid="stMetric"]{
-    background:#fff;
-    border:1px solid var(--line);
-    border-radius:16px;
-    box-shadow:0 6px 20px rgba(16,24,40,.04);
+[data-baseweb="input"]>div,[data-baseweb="select"]>div{
+ border-radius:12px!important; border-color:#DDE4EE!important;
 }
-
+label{color:var(--ink)!important;font-weight:650!important;}
 .stTabs [data-baseweb="tab-list"]{
-    background:#EEF2F7;
-    padding:.35rem;
-    border-radius:14px;
-    gap:.35rem;
+ background:rgba(237,242,248,.92);padding:.38rem;border-radius:15px;gap:.35rem;
 }
 .stTabs [data-baseweb="tab"]{
-    border-radius:10px;
-    font-weight:700;
-    padding:.65rem .9rem;
+ border-radius:11px;padding:.68rem .95rem;font-weight:750;color:#58677A;
 }
 .stTabs [aria-selected="true"]{
-    background:#fff!important;
-    color:var(--blue)!important;
-    box-shadow:0 3px 12px rgba(16,24,40,.08);
+ background:#fff!important;color:var(--blue)!important;
+ box-shadow:0 4px 15px rgba(15,23,42,.08);
 }
-
+.stButton>button,.stDownloadButton>button{
+ border-radius:12px!important;min-height:2.8rem;font-weight:800!important;
+ transition:transform .15s ease,box-shadow .15s ease;
+}
+.stButton>button:hover,.stDownloadButton>button:hover{
+ transform:translateY(-1px);box-shadow:0 10px 22px rgba(37,99,235,.16);
+}
+[data-testid="stMetric"]{
+ background:rgba(255,255,255,.90);border:1px solid var(--line);
+ border-radius:17px;box-shadow:0 8px 24px rgba(15,23,42,.05);
+}
 [data-testid="stSidebar"]{
-    background:linear-gradient(180deg,#fff,#F8FAFC);
-    border-right:1px solid var(--line);
+ background:linear-gradient(180deg,rgba(255,255,255,.96),rgba(246,249,253,.96));
+ border-right:1px solid var(--line);
 }
+[data-testid="stDataFrame"]{border:1px solid var(--line);border-radius:16px;overflow:hidden;}
+div[data-testid="stAlert"]{border-radius:15px;}
+.footer{color:#98A2B3;text-align:center;font-size:.72rem;padding:1rem 0 .2rem;}
 
-[data-testid="stDataFrame"]{
-    border:1px solid var(--line);
-    border-radius:15px;
-    overflow:hidden;
-}
-
-.footer{
-    color:#98A2B3;
-    text-align:center;
-    font-size:.72rem;
-    padding:1rem 0 .2rem;
-}
+@keyframes floatOrb{0%,100%{transform:translate3d(0,0,0) scale(1)}50%{transform:translate3d(-15px,12px,0) scale(1.06)}}
+@keyframes floatOrb2{0%,100%{transform:translate3d(0,0,0)}50%{transform:translate3d(18px,-10px,0)}}
 
 @media(max-width:760px){
-    .block-container{padding:.65rem .75rem 1.5rem;}
-    .hero{padding:1.35rem;border-radius:20px;}
-    .hero-title{font-size:1.85rem;}
+ .block-container{padding:.65rem .72rem 1.5rem;}
+ .hero{padding:1.35rem;border-radius:21px;}
+ .hero-title{font-size:1.85rem;line-height:1.15;}
+ .hero-sub{font-size:.9rem;line-height:1.5;}
+ .metric-card{min-height:96px;}
+ .metric-value{font-size:1.35rem;}
+ .card{padding:.95rem;}
+ .risk-number{font-size:2.05rem;}
+ .stTabs [data-baseweb="tab"]{padding:.58rem .65rem;font-size:.78rem;}
 }
 </style>
 """, unsafe_allow_html=True)
@@ -415,6 +349,12 @@ with st.sidebar:
     st.success("Model loaded • Ready")
     st.caption(f"{len(features)} model input features")
     st.caption("3 risk classes")
+    st.markdown(
+        '<div style="display:flex;align-items:center;gap:7px;color:#667085;font-size:.74rem">'
+        '<span style="width:8px;height:8px;border-radius:50%;background:#10B981;display:inline-block;box-shadow:0 0 0 4px rgba(16,185,129,.10)"></span>'
+        'System online · Model ready</div>',
+        unsafe_allow_html=True
+    )
     st.divider()
     st.caption("Research prototype • Not for diagnosis")
 
@@ -436,6 +376,14 @@ if page=="Overview / Dashboard":
         with col:
             st.markdown(f'<div class="metric-card"><div class="metric-label">{a}</div><div class="metric-value">{b}</div><div class="metric-note">{c}</div></div>',unsafe_allow_html=True)
 
+    st.markdown(
+        '<div class="card" style="margin:.2rem 0 1.15rem">'
+        '<div class="section-kicker">LIVE SYSTEM</div>'
+        '<b style="font-size:1.05rem">● Model engine ready</b>'
+        '<span style="color:#667085;margin-left:10px">Secure local inference · No retraining during assessment</span>'
+        '</div>',
+        unsafe_allow_html=True
+    )
     st.markdown("### Assessment workflow / মূল্যায়নের ধাপ")
     a,b,c=st.columns(3)
     cards=[
