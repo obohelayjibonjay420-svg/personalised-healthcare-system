@@ -3,9 +3,10 @@ import pandas as pd
 import numpy as np
 import joblib
 import json
+from datetime import datetime
 
 # ============================================================
-# PAGE CONFIG
+# CONFIG
 # ============================================================
 st.set_page_config(
     page_title="Personalised Healthcare",
@@ -15,265 +16,239 @@ st.set_page_config(
 )
 
 # ============================================================
-# CUSTOM CSS — modern dashboard
+# PREMIUM NOTION-STYLE UI
 # ============================================================
 st.markdown("""
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Bengali:wght@400;500;600;700;800&display=swap');
 
 :root{
-  --navy:#10233f;
-  --slate:#5d6b7d;
-  --line:#e5ebf3;
-  --blue:#2563eb;
-  --blue2:#4f46e5;
-  --cyan:#0891b2;
-  --green:#059669;
-  --amber:#d97706;
-  --red:#dc2626;
-  --surface:#ffffff;
-  --surface2:#f7faff;
+    --ink:#172033;
+    --muted:#667085;
+    --faint:#98A2B3;
+    --line:#E7ECF3;
+    --bg:#F7F9FC;
+    --card:#FFFFFF;
+    --blue:#2563EB;
+    --blue-soft:#EEF4FF;
+    --purple:#7C3AED;
+    --purple-soft:#F3EEFF;
+    --green:#059669;
+    --green-soft:#ECFDF5;
+    --amber:#D97706;
+    --amber-soft:#FFFBEB;
+    --red:#DC2626;
+    --red-soft:#FEF2F2;
 }
 
-/* Light application canvas */
 .stApp{
-  background:
-    radial-gradient(circle at 92% 5%, rgba(99,102,241,.08), transparent 24%),
-    radial-gradient(circle at 6% 16%, rgba(14,165,233,.06), transparent 22%),
-    #f6f8fc;
-  color:var(--navy);
+    background:
+      radial-gradient(circle at 92% 3%, rgba(124,58,237,.055), transparent 23%),
+      radial-gradient(circle at 4% 12%, rgba(37,99,235,.045), transparent 22%),
+      var(--bg);
+    color:var(--ink);
 }
 
 html,body,[class*="css"]{
-  font-family:"Inter","Noto Sans Bengali",sans-serif;
+    font-family:"Inter","Noto Sans Bengali",sans-serif;
 }
 
 .block-container{
-  max-width:1500px;
-  padding:1.15rem 2.1rem 2.5rem;
+    max-width:1480px;
+    padding:1rem 2rem 2.5rem;
 }
 
-/* Hero */
+h1,h2,h3,h4{
+    color:var(--ink)!important;
+    letter-spacing:-.025em;
+}
+
 .hero{
-  position:relative;
-  overflow:hidden;
-  padding:2.25rem 2.35rem;
-  border-radius:28px;
-  background:
-    radial-gradient(circle at 88% 18%, rgba(124,58,237,.14), transparent 25%),
-    radial-gradient(circle at 72% 100%, rgba(37,99,235,.12), transparent 30%),
-    linear-gradient(135deg,#ffffff 0%,#f5f9ff 52%,#f8f5ff 100%);
-  border:1px solid #e2e9f3;
-  box-shadow:0 18px 50px rgba(16,35,63,.08);
-  margin-bottom:1.4rem;
+    padding:2rem 2.2rem;
+    border:1px solid var(--line);
+    border-radius:26px;
+    background:
+      radial-gradient(circle at 92% 20%, rgba(124,58,237,.14), transparent 25%),
+      radial-gradient(circle at 72% 110%, rgba(37,99,235,.10), transparent 30%),
+      linear-gradient(135deg,#fff 0%,#f6f9ff 54%,#faf7ff 100%);
+    box-shadow:0 18px 45px rgba(16,24,40,.065);
+    margin-bottom:1.25rem;
+}
+
+.eyebrow{
+    color:#51627A;
+    font-size:.72rem;
+    font-weight:800;
+    letter-spacing:.14em;
+    text-transform:uppercase;
 }
 
 .hero-title{
-  font-size:clamp(1.9rem,3.5vw,2.85rem);
-  font-weight:800;
-  color:var(--navy) !important;
-  margin:.2rem 0 0;
-  letter-spacing:-.045em;
+    margin:.25rem 0 0;
+    font-size:clamp(1.8rem,3.5vw,2.75rem);
+    font-weight:800;
+    letter-spacing:-.05em;
+    color:var(--ink)!important;
 }
 
 .hero-sub{
-  color:#5b6b80 !important;
-  margin-top:.55rem;
-  font-size:1rem;
-  font-weight:500;
+    margin-top:.5rem;
+    color:#667085;
+    font-size:1rem;
 }
 
-.mini-label{
-  color:#49627f !important;
-  font-size:.72rem;
-  text-transform:uppercase;
-  letter-spacing:.14em;
-  font-weight:800;
+.card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:1.05rem 1.15rem;
+    box-shadow:0 7px 24px rgba(16,24,40,.045);
 }
 
-/* Section headings */
-h1,h2,h3,h4{
-  color:var(--navy) !important;
-  letter-spacing:-.025em;
+.metric-card{
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:1rem 1.05rem;
+    min-height:112px;
+    box-shadow:0 7px 24px rgba(16,24,40,.045);
 }
 
-/* Cards */
-.section-card{
-  padding:1.15rem 1.2rem;
-  border-radius:19px;
-  border:1px solid var(--line);
-  background:rgba(255,255,255,.94);
-  box-shadow:0 8px 26px rgba(16,35,63,.055);
-  margin-bottom:.85rem;
+.metric-label{
+    color:#667085;
+    font-size:.74rem;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:.08em;
 }
 
-.mini-value{
-  font-size:1.65rem;
-  font-weight:800;
-  color:var(--navy);
-  margin-top:.15rem;
+.metric-value{
+    color:var(--ink);
+    font-size:1.65rem;
+    font-weight:800;
+    margin-top:.25rem;
 }
 
-.badge{
-  display:inline-block;
-  padding:.3rem .68rem;
-  border-radius:999px;
-  font-size:.7rem;
-  font-weight:750;
-  background:#f3f6fa;
-  color:#475467;
-  border:1px solid #e4eaf2;
+.metric-note{
+    color:#98A2B3;
+    font-size:.74rem;
+    margin-top:.15rem;
 }
 
-/* Streamlit metrics */
-[data-testid="stMetric"]{
-  background:rgba(255,255,255,.95);
-  border:1px solid var(--line);
-  border-radius:18px;
-  padding:.95rem 1rem;
-  box-shadow:0 8px 25px rgba(16,35,63,.055);
+.section-kicker{
+    color:#667085;
+    font-size:.73rem;
+    font-weight:800;
+    text-transform:uppercase;
+    letter-spacing:.11em;
+    margin-bottom:.2rem;
 }
 
-[data-testid="stMetricLabel"]{
-  color:#66758a !important;
-  font-weight:650;
+.info-chip{
+    display:inline-block;
+    padding:.28rem .62rem;
+    border-radius:999px;
+    background:#F2F4F7;
+    border:1px solid #E4E7EC;
+    color:#475467;
+    font-size:.72rem;
+    font-weight:700;
+    margin:.12rem .18rem .12rem 0;
 }
 
-[data-testid="stMetricValue"]{
-  color:var(--navy) !important;
-  font-weight:800;
+.risk-card{
+    padding:1.45rem;
+    border-radius:22px;
+    border:1px solid;
+    box-shadow:0 12px 34px rgba(16,24,40,.06);
 }
 
-/* Forms */
-div[data-testid="stForm"]{
-  border:1px solid var(--line);
-  border-radius:23px;
-  padding:1.2rem;
-  background:rgba(255,255,255,.96);
-  box-shadow:0 15px 40px rgba(16,35,63,.065);
-}
+.risk-high{background:linear-gradient(135deg,#fff7f7,#fff);border-color:#FECACA;}
+.risk-moderate{background:linear-gradient(135deg,#fffcf3,#fff);border-color:#FDE68A;}
+.risk-low{background:linear-gradient(135deg,#f3fdf8,#fff);border-color:#BBF7D0;}
 
-/* Inputs */
-[data-baseweb="input"], [data-baseweb="select"] > div{
-  border-radius:12px !important;
-}
-
-label{
-  color:var(--navy) !important;
-  font-weight:650 !important;
-}
-
-/* Tabs */
-.stTabs [data-baseweb="tab-list"]{
-  gap:.4rem;
-  background:#edf2f8;
-  padding:.4rem;
-  border-radius:15px;
-}
-
-.stTabs [data-baseweb="tab"]{
-  border-radius:11px;
-  padding:.68rem 1rem;
-  font-weight:700;
-  color:#58677a;
-}
-
-.stTabs [aria-selected="true"]{
-  background:#ffffff !important;
-  color:var(--blue) !important;
-  box-shadow:0 4px 14px rgba(16,35,63,.09);
-}
-
-/* Primary action */
-.stButton > button, div.stFormSubmitButton > button{
-  border-radius:13px;
-  font-weight:800;
-  min-height:2.9rem;
-  border:0;
-  box-shadow:0 8px 20px rgba(37,99,235,.18);
-}
-
-/* Risk cards */
-.risk-high,.risk-mod,.risk-low{
-  padding:1.5rem 1.65rem;
-  border-radius:23px;
-  box-shadow:0 12px 32px rgba(16,35,63,.065);
-}
-
-.risk-high{
-  background:linear-gradient(135deg,#fff5f5,#fffafa);
-  border:1px solid #fecaca;
-}
-
-.risk-mod{
-  background:linear-gradient(135deg,#fffbeb,#fffdf7);
-  border:1px solid #fde68a;
-}
-
-.risk-low{
-  background:linear-gradient(135deg,#effcf5,#f9fffb);
-  border:1px solid #bbf7d0;
+.risk-title{
+    font-size:.72rem;
+    font-weight:800;
+    letter-spacing:.12em;
+    color:#667085;
+    text-transform:uppercase;
 }
 
 .risk-number{
-  font-size:2.55rem;
-  font-weight:850;
-  letter-spacing:-.05em;
-  line-height:1;
-  color:var(--navy);
+    font-size:2.5rem;
+    font-weight:850;
+    letter-spacing:-.055em;
+    color:var(--ink);
+    margin-top:.25rem;
 }
 
-.risk-name{
-  font-size:.8rem;
-  font-weight:800;
-  letter-spacing:.1em;
-  margin-top:.55rem;
-  color:#66758a;
+.stButton>button, .stDownloadButton>button{
+    border-radius:12px!important;
+    min-height:2.7rem;
+    font-weight:750!important;
 }
 
-/* Sidebar */
+div[data-testid="stForm"]{
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:22px;
+    padding:1.15rem;
+    box-shadow:0 12px 35px rgba(16,24,40,.055);
+}
+
+[data-testid="stMetric"]{
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:16px;
+    box-shadow:0 6px 20px rgba(16,24,40,.04);
+}
+
+.stTabs [data-baseweb="tab-list"]{
+    background:#EEF2F7;
+    padding:.35rem;
+    border-radius:14px;
+    gap:.35rem;
+}
+.stTabs [data-baseweb="tab"]{
+    border-radius:10px;
+    font-weight:700;
+    padding:.65rem .9rem;
+}
+.stTabs [aria-selected="true"]{
+    background:#fff!important;
+    color:var(--blue)!important;
+    box-shadow:0 3px 12px rgba(16,24,40,.08);
+}
+
 [data-testid="stSidebar"]{
-  background:linear-gradient(180deg,#ffffff 0%,#f5f8fc 100%);
-  border-right:1px solid var(--line);
+    background:linear-gradient(180deg,#fff,#F8FAFC);
+    border-right:1px solid var(--line);
 }
 
-[data-testid="stSidebar"] h2,
-[data-testid="stSidebar"] h3,
-[data-testid="stSidebar"] p{
-  color:var(--navy);
-}
-
-/* Dataframe */
 [data-testid="stDataFrame"]{
-  border-radius:17px;
-  overflow:hidden;
-  border:1px solid var(--line);
-  box-shadow:0 6px 20px rgba(16,35,63,.04);
+    border:1px solid var(--line);
+    border-radius:15px;
+    overflow:hidden;
 }
 
-/* Alerts */
-div[data-testid="stAlert"]{
-  border-radius:15px;
+.footer{
+    color:#98A2B3;
+    text-align:center;
+    font-size:.72rem;
+    padding:1rem 0 .2rem;
 }
 
-/* Footer */
-.footer-note{
-  color:#7a8798;
-  font-size:.74rem;
-  text-align:center;
-  padding:1rem 0 .2rem;
-}
-
-@media (max-width:700px){
-  .block-container{padding:.8rem .75rem 1.5rem;}
-  .hero{padding:1.4rem;border-radius:21px;}
-  .hero-title{font-size:1.85rem;}
+@media(max-width:760px){
+    .block-container{padding:.65rem .75rem 1.5rem;}
+    .hero{padding:1.35rem;border-radius:20px;}
+    .hero-title{font-size:1.85rem;}
 }
 </style>
 """, unsafe_allow_html=True)
 
 # ============================================================
-# MODEL
+# LOAD MODEL
 # ============================================================
 @st.cache_resource
 def load_model():
@@ -284,373 +259,466 @@ def load_model():
 
 model, config = load_model()
 features = config["features"]
+classes = list(model.classes_)
 
 # ============================================================
 # METADATA
 # ============================================================
 META = {
-    "Age": ("বয়স", "Age in completed years / পূর্ণ বয়স", "years",
-            "Adult input; model-specific relationship"),
-    "BMI": ("বডি মাস ইনডেক্স", "Weight relative to height / ওজন-উচ্চতার অনুপাত", "kg/m²",
-            "<18.5 underweight | 18.5–24.9 healthy | 25–29.9 overweight | ≥30 obesity"),
-    "Cholesterol": ("মোট কোলেস্টেরল", "Total blood cholesterol / রক্তের মোট কোলেস্টেরল", "mg/dL",
-                    "<200 generally desirable"),
-    "Glucose_Level": ("রক্তের গ্লুকোজ", "Blood glucose / রক্তে শর্করার মাত্রা", "mg/dL",
-                      "Fasting: ~70–99 normal; fasting status matters"),
-    "HbA1c": ("এইচবিএ১সি", "Average glucose marker over ~2–3 months / গত ২–৩ মাসের গড় শর্করার সূচক", "%",
-              "<5.7% normal | 5.7–6.4% prediabetes range | ≥6.5% diabetes range"),
-    "Systolic_BP": ("সিস্টোলিক BP", "Pressure when heart contracts / হৃদপিণ্ড সংকোচনের সময়ের চাপ", "mmHg",
-                    "<120 normal | 120–129 elevated | ≥130 higher"),
-    "Diastolic_BP": ("ডায়াস্টোলিক BP", "Pressure when heart relaxes / হৃদপিণ্ড শিথিল অবস্থার চাপ", "mmHg",
-                     "<80 normal | ≥80 higher"),
-    "LDL": ("এলডিএল", "Low-density lipoprotein; often called 'bad' cholesterol / খারাপ কোলেস্টেরল", "mg/dL",
-            "<100 generally desirable; target varies by risk"),
-    "HDL": ("এইচডিএল", "High-density lipoprotein; often called 'good' cholesterol / ভালো কোলেস্টেরল", "mg/dL",
-            "≥60 best; low thresholds differ by sex"),
-    "Triglycerides": ("ট্রাইগ্লিসারাইড", "A major blood fat / রক্তের এক ধরনের চর্বি", "mg/dL",
-                      "<150 normal | 150–199 borderline high | ≥200 high"),
-    "CRP": ("সি-রিঅ্যাকটিভ প্রোটিন", "Inflammation-related biomarker / প্রদাহের সঙ্গে সম্পর্কিত সূচক", "mg/L",
-            "Assay/context dependent; hs-CRP uses separate categories"),
-    "eGFR": ("কিডনি ফিল্টারিং রেট", "Estimated kidney filtration / কিডনির আনুমানিক filtration", "mL/min/1.73m²",
-             "≥90 usually normal; 60–89 mildly decreased; <60 reduced"),
-    "Waist_Circumference": ("কোমরের পরিধি", "Waist circumference / কোমরের চারপাশের মাপ", "cm",
-                            "Risk cutoffs vary by sex and population"),
-    "Resting_Heart_Rate": ("বিশ্রামকালীন হার্ট রেট", "Heart beats per minute at rest / বিশ্রামে হৃদস্পন্দন", "bpm",
-                           "Typical adult resting range ~60–100"),
-    "HRV": ("হার্ট রেট ভ্যারিয়েবিলিটি", "Variation between heartbeats / পরপর হৃদস্পন্দনের সময়ের পরিবর্তন",
-            "device-dependent", "No single universal clinical reference"),
-    "Sleep_Hours": ("ঘুমের সময়", "Average sleep duration / প্রতিদিন গড় ঘুম", "hours/day",
-                    "Adults commonly recommended ~7–9 h/night"),
-    "PRS_Cardiometabolic": ("কার্ডিওমেটাবলিক PRS", "Polygenic susceptibility score / জেনেটিক susceptibility score",
-                            "model score", "No universal clinical range; model-specific"),
-    "PRS_Type2Diabetes": ("টাইপ-২ ডায়াবেটিস PRS", "Polygenic susceptibility score / জেনেটিক susceptibility score",
-                          "model score", "No universal clinical range; model-specific"),
-    "APOE_e4_Carrier": ("APOE-e4 carrier", "Presence of APOE ε4 allele / APOE ε4 allele আছে কি না", "0/1",
-                        "0 = No | 1 = Yes"),
-    "BRCA_Pathogenic_Variant": ("BRCA pathogenic variant", "Pathogenic BRCA variant / pathogenic variant আছে কি না",
-                                "0/1", "0 = No | 1 = Yes"),
-    "Family_History_CVD": ("পরিবারে CVD ইতিহাস", "Family history of cardiovascular disease / পরিবারের হৃদ্‌রোগের ইতিহাস",
-                           "0/1", "0 = No | 1 = Yes"),
-    "Family_History_T2D": ("পরিবারে T2D ইতিহাস", "Family history of type 2 diabetes / পরিবারের টাইপ-২ ডায়াবেটিসের ইতিহাস",
-                           "0/1", "0 = No | 1 = Yes"),
+"Age":("বয়স","Age in completed years / পূর্ণ বয়স","years","Adult input; model-specific"),
+"BMI":("বডি মাস ইনডেক্স","Weight relative to height / ওজন-উচ্চতার অনুপাত","kg/m²","<18.5 underweight | 18.5–24.9 healthy | 25–29.9 overweight | ≥30 obesity"),
+"Cholesterol":("মোট কোলেস্টেরল","Total blood cholesterol / রক্তের মোট কোলেস্টেরল","mg/dL","<200 generally desirable"),
+"Glucose_Level":("রক্তের গ্লুকোজ","Blood glucose / রক্তে শর্করা","mg/dL","Fasting ~70–99 mg/dL is generally normal"),
+"HbA1c":("এইচবিএ১সি","Average glucose marker / গত ২–৩ মাসের গড় শর্করার সূচক","%","<5.7% normal | 5.7–6.4% prediabetes range | ≥6.5% diabetes range"),
+"Systolic_BP":("সিস্টোলিক BP","Pressure during heart contraction / সংকোচনের সময়ের চাপ","mmHg","<120 normal | 120–129 elevated | ≥130 higher"),
+"Diastolic_BP":("ডায়াস্টোলিক BP","Pressure during heart relaxation / শিথিল অবস্থার চাপ","mmHg","<80 normal | ≥80 higher"),
+"LDL":("এলডিএল","Low-density lipoprotein / 'bad' cholesterol","mg/dL","<100 generally desirable; target varies by risk"),
+"HDL":("এইচডিএল","High-density lipoprotein / 'good' cholesterol","mg/dL","≥60 best; low thresholds differ by sex"),
+"Triglycerides":("ট্রাইগ্লিসারাইড","Major blood fat / রক্তের এক ধরনের চর্বি","mg/dL","<150 normal | 150–199 borderline high | ≥200 high"),
+"CRP":("সি-রিঅ্যাকটিভ প্রোটিন","Inflammation-related biomarker / প্রদাহের সূচক","mg/L","Assay/context dependent"),
+"eGFR":("কিডনি ফিল্টারিং রেট","Estimated kidney filtration / কিডনির filtration capacity","mL/min/1.73m²","≥90 usually normal; 60–89 mildly decreased; <60 reduced"),
+"Waist_Circumference":("কোমরের পরিধি","Waist circumference / কোমরের মাপ","cm","Cutoffs vary by sex and population"),
+"Resting_Heart_Rate":("বিশ্রামকালীন হার্ট রেট","Heart beats at rest / বিশ্রামে হৃদস্পন্দন","bpm","Typical adult resting range ~60–100"),
+"HRV":("হার্ট রেট ভ্যারিয়েবিলিটি","Beat-to-beat variation / হৃদস্পন্দনের সময়ের পরিবর্তন","device-dependent","No single universal reference"),
+"Sleep_Hours":("ঘুমের সময়","Average sleep duration / গড় ঘুমের সময়","hours/day","Adults commonly recommended ~7–9 h/night"),
+"PRS_Cardiometabolic":("কার্ডিওমেটাবলিক PRS","Polygenic susceptibility score / জেনেটিক susceptibility","model score","No universal clinical range; model-specific"),
+"PRS_Type2Diabetes":("টাইপ-২ ডায়াবেটিস PRS","Polygenic susceptibility score / জেনেটিক susceptibility","model score","No universal clinical range; model-specific"),
+"APOE_e4_Carrier":("APOE-e4 carrier","Presence of APOE ε4 allele / APOE ε4 allele আছে কি না","0/1","0 = No | 1 = Yes"),
+"BRCA_Pathogenic_Variant":("BRCA pathogenic variant","Pathogenic BRCA variant / pathogenic variant আছে কি না","0/1","0 = No | 1 = Yes"),
+"Family_History_CVD":("পরিবারে CVD ইতিহাস","Family history of cardiovascular disease / পরিবারের হৃদ্‌রোগের ইতিহাস","0/1","0 = No | 1 = Yes"),
+"Family_History_T2D":("পরিবারে T2D ইতিহাস","Family history of type 2 diabetes / পরিবারের ডায়াবেটিসের ইতিহাস","0/1","0 = No | 1 = Yes"),
 }
 
-CATS = {
-    "Gender": ["Female", "Male"],
-    "Smoking_Status": ["Non-smoker", "Former smoker", "Current smoker"],
-    "Alcohol_Consumption": ["Low", "Moderate", "High", "Unknown"],
-    "Physical_Activity_Level": ["Sedentary", "Lightly Active", "Moderately Active", "Highly Active"],
-    "Diet_Type": ["Balanced", "High Protein", "Keto", "Mediterranean", "Vegan", "Vegetarian"],
-    "Sleep_Quality": ["Excellent", "Good", "Fair", "Poor"],
+CATS={
+"Gender":["Female","Male"],
+"Smoking_Status":["Non-smoker","Former smoker","Current smoker"],
+"Alcohol_Consumption":["Low","Moderate","High","Unknown"],
+"Physical_Activity_Level":["Sedentary","Lightly Active","Moderately Active","Highly Active"],
+"Diet_Type":["Balanced","High Protein","Keto","Mediterranean","Vegan","Vegetarian"],
+"Sleep_Quality":["Excellent","Good","Fair","Poor"],
 }
 
-DEFAULTS = {
-    "Age": 40.0, "BMI": 24.0, "Cholesterol": 190.0, "Glucose_Level": 90.0,
-    "HbA1c": 5.4, "Systolic_BP": 120.0, "Diastolic_BP": 80.0,
-    "LDL": 100.0, "HDL": 50.0, "Triglycerides": 120.0, "CRP": 1.0,
-    "eGFR": 90.0, "Waist_Circumference": 85.0, "Resting_Heart_Rate": 70.0,
-    "HRV": 50.0, "Sleep_Hours": 7.0, "PRS_Cardiometabolic": 0.0,
-    "PRS_Type2Diabetes": 0.0, "APOE_e4_Carrier": 0, "BRCA_Pathogenic_Variant": 0,
-    "Family_History_CVD": 0, "Family_History_T2D": 0,
+DEFAULTS={
+"Age":40.0,"BMI":24.0,"Cholesterol":190.0,"Glucose_Level":90.0,"HbA1c":5.4,
+"Systolic_BP":120.0,"Diastolic_BP":80.0,"LDL":100.0,"HDL":50.0,
+"Triglycerides":120.0,"CRP":1.0,"eGFR":90.0,"Waist_Circumference":85.0,
+"Resting_Heart_Rate":70.0,"HRV":50.0,"Sleep_Hours":7.0,
+"PRS_Cardiometabolic":0.0,"PRS_Type2Diabetes":0.0,
+"APOE_e4_Carrier":0,"BRCA_Pathogenic_Variant":0,
+"Family_History_CVD":0,"Family_History_T2D":0,
 }
+
+# ============================================================
+# STATE
+# ============================================================
+if "patient_data" not in st.session_state:
+    st.session_state.patient_data=None
+if "result" not in st.session_state:
+    st.session_state.result=None
 
 # ============================================================
 # HELPERS
 # ============================================================
-def meta_text(feature):
-    bn, meaning, unit, ref = META.get(
-        feature, (feature, "Model input / মডেল ইনপুট", "", "No universal reference")
-    )
-    return bn, meaning, unit, ref
+def info(f):
+    return META.get(f,(f,f,"","No universal reference"))
 
-def numeric_input(feature, key_prefix="p"):
-    bn, meaning, unit, ref = meta_text(feature)
+def numeric_control(f,prefix="input"):
+    bn,meaning,unit,ref=info(f)
     return st.number_input(
-        f"{feature} — {bn}",
-        value=float(DEFAULTS.get(feature, 0.0)),
+        f"{f} — {bn}",
+        value=float(DEFAULTS.get(f,0.0)),
         step=0.1,
-        help=f"Meaning / অর্থ: {meaning}\nReference: {ref}",
-        key=f"{key_prefix}_{feature}",
+        help=f"Meaning / অর্থ: {meaning}\nUnit: {unit}\nReference: {ref}",
+        key=f"{prefix}_{f}"
     )
 
-def select_input(feature, key_prefix="p"):
-    bn, meaning, unit, ref = meta_text(feature)
+def select_control(f,prefix="input"):
+    bn,meaning,unit,ref=info(f)
     return st.selectbox(
-        f"{feature} — {bn}",
-        CATS[feature],
+        f"{f} — {bn}",CATS[f],
         help=f"Meaning / অর্থ: {meaning}\nReference: {ref}",
-        key=f"{key_prefix}_{feature}",
+        key=f"{prefix}_{f}"
     )
 
-def yes_no_input(feature, key_prefix="p"):
-    bn, meaning, unit, ref = meta_text(feature)
+def binary_control(f,prefix="input"):
+    bn,meaning,unit,ref=info(f)
     return st.selectbox(
-        f"{feature} — {bn}",
-        [0, 1],
-        format_func=lambda x: "No / না" if x == 0 else "Yes / হ্যাঁ",
+        f"{f} — {bn}",[0,1],
+        format_func=lambda x:"No / না" if x==0 else "Yes / হ্যাঁ",
         help=f"Meaning / অর্থ: {meaning}\nReference: {ref}",
-        key=f"{key_prefix}_{feature}",
+        key=f"{prefix}_{f}"
     )
 
-def status_bmi(v):
-    if v < 18.5: return "Underweight / কম ওজন"
-    if v < 25: return "Healthy range / স্বাভাবিক"
-    if v < 30: return "Overweight / অতিরিক্ত ওজন"
-    return "Obesity range / স্থূলতা"
+def clinical_flags(p):
+    flags=[]
+    if "BMI" in p:
+        if p["BMI"]>=30: flags.append(("BMI","Obesity range / স্থূলতার range","red"))
+        elif p["BMI"]>=25: flags.append(("BMI","Overweight range / অতিরিক্ত ওজন","amber"))
+    if "Systolic_BP" in p and "Diastolic_BP" in p:
+        if p["Systolic_BP"]>=140 or p["Diastolic_BP"]>=90: flags.append(("BP","High range / উচ্চ","red"))
+        elif p["Systolic_BP"]>=130 or p["Diastolic_BP"]>=80: flags.append(("BP","Above normal / স্বাভাবিকের বেশি","amber"))
+    if "LDL" in p and p["LDL"]>=130: flags.append(("LDL","Above desirable / কাঙ্ক্ষিতের বেশি","amber"))
+    if "Triglycerides" in p and p["Triglycerides"]>=150: flags.append(("TG","Above normal / বেশি","amber"))
+    if "HbA1c" in p and p["HbA1c"]>=5.7: flags.append(("HbA1c","Above normal range / স্বাভাবিকের বেশি","amber"))
+    if "eGFR" in p and p["eGFR"]<60: flags.append(("eGFR","Reduced / কম","red"))
+    return flags
 
-def status_bp(sys, dia):
-    if sys < 120 and dia < 80: return "Normal / স্বাভাবিক"
-    if sys < 130 and dia < 80: return "Elevated / কিছুটা বেশি"
-    if sys < 140 or dia < 90: return "Higher / বেশি"
-    return "High / উচ্চ"
-
-def status_ldl(v):
-    if v < 100: return "Generally desirable"
-    if v < 130: return "Near/above desirable"
-    if v < 160: return "Borderline high"
-    if v < 190: return "High"
-    return "Very high"
-
-def status_tg(v):
-    if v < 150: return "Normal"
-    if v < 200: return "Borderline high"
-    if v < 500: return "High"
-    return "Very high"
+def report_text():
+    if not st.session_state.result:
+        return ""
+    r=st.session_state.result
+    p=st.session_state.patient_data or {}
+    lines=[
+        "PERSONALISED HEALTHCARE RISK ASSESSMENT",
+        f"Generated: {datetime.now().strftime('%Y-%m-%d %H:%M')}",
+        "",
+        f"Predicted Risk: {r['prediction']}",
+        "Risk Probabilities:"
+    ]
+    for c,v in r["probabilities"].items():
+        lines.append(f"  {c}: {v:.2%}")
+    lines += ["","Clinical Snapshot:"]
+    for f,v in p.items():
+        lines.append(f"  {f}: {v}")
+    lines += [
+        "",
+        "SAFETY NOTE:",
+        "Research prototype only. Model output is not a diagnosis or treatment recommendation.",
+        "What-if changes represent model sensitivity, not causal treatment effects."
+    ]
+    return "\n".join(lines)
 
 # ============================================================
-# HEADER
+# HERO
 # ============================================================
 st.markdown("""
 <div class="hero">
-  <div class="mini-label">AI • PERSONAL HEALTH • RESEARCH PROTOTYPE</div>
+  <div class="eyebrow">AI • PERSONAL HEALTH • RESEARCH</div>
   <div class="hero-title">Personalised Healthcare Risk Assessment</div>
-  <div class="hero-sub">ব্যক্তিকেন্দ্রিক স্বাস্থ্যঝুঁকি মূল্যায়ন • Interactive bilingual research prototype</div>
+  <div class="hero-sub">ব্যক্তিকেন্দ্রিক স্বাস্থ্যঝুঁকি মূল্যায়ন · Bilingual intelligent research dashboard</div>
 </div>
-""", unsafe_allow_html=True)
+""",unsafe_allow_html=True)
 
 # ============================================================
-# SIDEBAR NAVIGATION
+# SIDEBAR
 # ============================================================
 with st.sidebar:
     st.markdown("## 🩺 Health Assessment")
     st.caption("বাংলা + English")
-    page = st.radio(
-        "Navigate / নেভিগেট",
-        ["Dashboard", "Patient Input", "Risk Results", "Reference Guide"],
-        label_visibility="collapsed",
+    page=st.radio(
+        "Navigation / নেভিগেশন",
+        ["Overview / Dashboard","Patient Assessment","Risk Results","What-if Simulator","Reference Guide"],
+        label_visibility="collapsed"
     )
     st.divider()
-    st.markdown("**Model status**")
-    st.success("Loaded • Ready")
+    st.markdown("**System status**")
+    st.success("Model loaded • Ready")
     st.caption(f"{len(features)} model input features")
+    st.caption("3 risk classes")
     st.divider()
-    st.caption("Research prototype only. Not for diagnosis or treatment.")
+    st.caption("Research prototype • Not for diagnosis")
 
 # ============================================================
-# PATIENT INPUT
+# OVERVIEW
 # ============================================================
-if "patient_data" not in st.session_state:
-    st.session_state.patient_data = None
-if "result" not in st.session_state:
-    st.session_state.result = None
+if page=="Overview / Dashboard":
+    st.subheader("Overview / সারসংক্ষেপ")
+    st.caption("A quick view of the assessment workflow and model interface.")
 
-if page == "Dashboard":
-    st.subheader("Welcome / স্বাগতম")
-    c1, c2, c3, c4 = st.columns(4)
-    c1.metric("Model Inputs", len(features))
-    c2.metric("Risk Classes", len(model.classes_))
-    c3.metric("Interface", "Bilingual")
-    c4.metric("Mode", "Research")
+    cols=st.columns(4)
+    metrics=[
+        ("Model Inputs",len(features),"features"),
+        ("Risk Classes",len(classes),"High • Moderate • Low"),
+        ("Interface","BI","Bilingual"),
+        ("Mode","Research","Prototype"),
+    ]
+    for col,(a,b,c) in zip(cols,metrics):
+        with col:
+            st.markdown(f'<div class="metric-card"><div class="metric-label">{a}</div><div class="metric-value">{b}</div><div class="metric-note">{c}</div></div>',unsafe_allow_html=True)
 
     st.markdown("### Assessment workflow / মূল্যায়নের ধাপ")
-    a, b, c = st.columns(3)
-    with a:
-        st.markdown('<div class="section-card"><b>01 • Enter</b><br>রোগীর clinical, lifestyle & genetic information দিন।</div>', unsafe_allow_html=True)
-    with b:
-        st.markdown('<div class="section-card"><b>02 • Assess</b><br>Model probability ও predicted risk দেখুন।</div>', unsafe_allow_html=True)
-    with c:
-        st.markdown('<div class="section-card"><b>03 • Interpret</b><br>Reference values ও model output একসাথে review করুন।</div>', unsafe_allow_html=True)
+    a,b,c=st.columns(3)
+    cards=[
+        ("01","ENTER / ইনপুট","Clinical, lifestyle and genetic information দিন।"),
+        ("02","ASSESS / মূল্যায়ন","Model predicted class ও probabilities দেখুন।"),
+        ("03","UNDERSTAND / বুঝুন","Reference values, flags ও what-if sensitivity review করুন।")
+    ]
+    for col,(n,t,d) in zip([a,b,c],cards):
+        with col:
+            st.markdown(f'<div class="card"><div class="section-kicker">{n}</div><h3>{t}</h3><p style="color:#667085">{d}</p></div>',unsafe_allow_html=True)
 
-    st.info("Go to **Patient Input** from the left sidebar to start. / শুরু করতে বাম পাশের Patient Input নির্বাচন করুন।")
+    st.markdown("### Built for / কার জন্য")
+    st.markdown(
+        '<span class="info-chip">Research</span><span class="info-chip">Public Health</span>'
+        '<span class="info-chip">Clinical Education</span><span class="info-chip">Health Analytics</span>'
+        '<span class="info-chip">AI/ML Prototype</span>',
+        unsafe_allow_html=True
+    )
 
-elif page == "Patient Input":
-    st.subheader("Patient Input / রোগীর তথ্য")
-    st.caption("Each field includes meaning, unit and a reference note. / প্রতিটি ফিল্ডে অর্থ, unit ও reference note দেওয়া আছে।")
+# ============================================================
+# PATIENT ASSESSMENT
+# ============================================================
+elif page=="Patient Assessment":
+    st.subheader("Patient Assessment / রোগীর মূল্যায়ন")
+    st.caption("Enter available information. Each field provides meaning, unit and reference guidance.")
 
-    with st.form("advanced_patient_form"):
-        tab1, tab2, tab3, tab4 = st.tabs([
+    with st.form("assessment_form"):
+        tab1,tab2,tab3,tab4=st.tabs([
             "👤 Profile / প্রোফাইল",
             "❤️ Clinical / ক্লিনিক্যাল",
             "🏃 Lifestyle / জীবনযাপন",
             "🧬 Genetics / জেনেটিক"
         ])
-
-        patient = {}
+        patient={}
 
         with tab1:
-            x1, x2 = st.columns(2)
-            with x1:
-                if "Age" in features: patient["Age"] = numeric_input("Age")
-                if "Gender" in features: patient["Gender"] = select_input("Gender")
-                if "BMI" in features: patient["BMI"] = numeric_input("BMI")
-                if "Waist_Circumference" in features: patient["Waist_Circumference"] = numeric_input("Waist_Circumference")
-            with x2:
-                if "Smoking_Status" in features: patient["Smoking_Status"] = select_input("Smoking_Status")
-                if "Alcohol_Consumption" in features: patient["Alcohol_Consumption"] = select_input("Alcohol_Consumption")
-                if "Sleep_Quality" in features: patient["Sleep_Quality"] = select_input("Sleep_Quality")
-                if "Sleep_Hours" in features: patient["Sleep_Hours"] = numeric_input("Sleep_Hours")
+            a,b=st.columns(2)
+            if "Age" in features:
+                with a: patient["Age"]=numeric_control("Age")
+            if "Gender" in features:
+                with b: patient["Gender"]=select_control("Gender")
+            if "BMI" in features:
+                with a: patient["BMI"]=numeric_control("BMI")
+            if "Waist_Circumference" in features:
+                with b: patient["Waist_Circumference"]=numeric_control("Waist_Circumference")
+            if "Smoking_Status" in features:
+                with a: patient["Smoking_Status"]=select_control("Smoking_Status")
+            if "Alcohol_Consumption" in features:
+                with b: patient["Alcohol_Consumption"]=select_control("Alcohol_Consumption")
 
         with tab2:
-            x1, x2 = st.columns(2)
-            clinical = [
-                "Cholesterol", "Glucose_Level", "HbA1c", "Systolic_BP",
-                "Diastolic_BP", "LDL", "HDL", "Triglycerides", "CRP",
-                "eGFR", "Resting_Heart_Rate", "HRV"
-            ]
-            for i, f in enumerate([x for x in clinical if x in features]):
-                with (x1 if i % 2 == 0 else x2):
-                    patient[f] = numeric_input(f)
+            clinical=["Cholesterol","Glucose_Level","HbA1c","Systolic_BP","Diastolic_BP",
+                      "LDL","HDL","Triglycerides","CRP","eGFR","Resting_Heart_Rate","HRV"]
+            available=[f for f in clinical if f in features]
+            a,b=st.columns(2)
+            for i,f in enumerate(available):
+                with (a if i%2==0 else b):
+                    patient[f]=numeric_control(f)
 
         with tab3:
-            x1, x2 = st.columns(2)
+            a,b=st.columns(2)
             if "Physical_Activity_Level" in features:
-                with x1: patient["Physical_Activity_Level"] = select_input("Physical_Activity_Level")
+                with a: patient["Physical_Activity_Level"]=select_control("Physical_Activity_Level")
             if "Diet_Type" in features:
-                with x2: patient["Diet_Type"] = select_input("Diet_Type")
+                with b: patient["Diet_Type"]=select_control("Diet_Type")
+            if "Sleep_Quality" in features:
+                with a: patient["Sleep_Quality"]=select_control("Sleep_Quality")
+            if "Sleep_Hours" in features:
+                with b: patient["Sleep_Hours"]=numeric_control("Sleep_Hours")
 
-            for f in ["Stress_Level", "Depression_Score", "Anxiety_Score", "Social_Isolation_Index"]:
+            for f in ["Stress_Level","Depression_Score","Anxiety_Score","Social_Isolation_Index"]:
                 if f in features:
-                    patient[f] = numeric_input(f)
+                    patient[f]=numeric_control(f)
 
         with tab4:
-            st.caption("Genetic variables are susceptibility indicators, not diagnoses. / জেনেটিক ভ্যারিয়েবল susceptibility বোঝায়, রোগ নির্ণয় নয়।")
-            x1, x2 = st.columns(2)
-            genetic = [
-                "PRS_Cardiometabolic", "PRS_Type2Diabetes",
-                "APOE_e4_Carrier", "BRCA_Pathogenic_Variant",
-                "Family_History_CVD", "Family_History_T2D"
-            ]
-            for i, f in enumerate([x for x in genetic if x in features]):
-                with (x1 if i % 2 == 0 else x2):
-                    if f in ["APOE_e4_Carrier", "BRCA_Pathogenic_Variant",
-                             "Family_History_CVD", "Family_History_T2D"]:
-                        patient[f] = yes_no_input(f)
+            st.info("Genetic inputs represent susceptibility information. / জেনেটিক ইনপুট susceptibility বোঝায়; diagnosis নয়।")
+            genetic=["PRS_Cardiometabolic","PRS_Type2Diabetes","APOE_e4_Carrier",
+                     "BRCA_Pathogenic_Variant","Family_History_CVD","Family_History_T2D"]
+            a,b=st.columns(2)
+            for i,f in enumerate([x for x in genetic if x in features]):
+                with (a if i%2==0 else b):
+                    if f in ["APOE_e4_Carrier","BRCA_Pathogenic_Variant","Family_History_CVD","Family_History_T2D"]:
+                        patient[f]=binary_control(f)
                     else:
-                        patient[f] = numeric_input(f)
+                        patient[f]=numeric_control(f)
 
-        submitted = st.form_submit_button(
-            "🔎 Assess Risk / স্বাস্থ্যঝুঁকি মূল্যায়ন",
+        submitted=st.form_submit_button(
+            "🔎 Assess Health Risk / স্বাস্থ্যঝুঁকি মূল্যায়ন",
             use_container_width=True,
             type="primary"
         )
 
     if submitted:
-        # Ensure exact feature order
-        X = pd.DataFrame([{f: patient.get(f, DEFAULTS.get(f, 0)) for f in features}])[features]
+        X=pd.DataFrame([{f:patient.get(f,DEFAULTS.get(f,0)) for f in features}])[features]
         try:
-            pred = model.predict(X)[0]
-            probs = model.predict_proba(X)[0]
-            st.session_state.patient_data = patient
-            st.session_state.result = {
-                "prediction": pred,
-                "probabilities": {c: float(p) for c, p in zip(model.classes_, probs)}
+            pred=model.predict(X)[0]
+            probs=model.predict_proba(X)[0]
+            st.session_state.patient_data=patient
+            st.session_state.result={
+                "prediction":pred,
+                "probabilities":{c:float(v) for c,v in zip(classes,probs)}
             }
-            st.success("Assessment completed / মূল্যায়ন সম্পন্ন হয়েছে। Go to Risk Results.")
+            st.success("Assessment completed / মূল্যায়ন সম্পন্ন হয়েছে। Open Risk Results.")
         except Exception as e:
             st.error("Prediction failed / Prediction সম্পন্ন হয়নি।")
             st.code(str(e))
 
-    # Live clinical snapshot
     if st.session_state.patient_data:
-        p = st.session_state.patient_data
-        st.divider()
-        st.markdown("### Quick clinical snapshot / দ্রুত ক্লিনিক্যাল সারাংশ")
-        cards = []
-        if "BMI" in p: cards.append(("BMI", p["BMI"], status_bmi(p["BMI"])))
-        if "Systolic_BP" in p and "Diastolic_BP" in p:
-            cards.append(("BP", f"{p['Systolic_BP']:.0f}/{p['Diastolic_BP']:.0f}", status_bp(p["Systolic_BP"], p["Diastolic_BP"])))
-        if "LDL" in p: cards.append(("LDL", f"{p['LDL']:.1f}", status_ldl(p["LDL"])))
-        if "Triglycerides" in p: cards.append(("Triglycerides", f"{p['Triglycerides']:.1f}", status_tg(p["Triglycerides"])))
-
-        cols = st.columns(len(cards) if cards else 1)
-        for col, (name, value, status) in zip(cols, cards):
-            with col:
-                st.markdown(f'<div class="section-card"><div class="mini-label">{name}</div><div class="mini-value">{value}</div><div class="badge">{status}</div></div>', unsafe_allow_html=True)
-
-elif page == "Risk Results":
-    st.subheader("Risk Results / ঝুঁকির ফলাফল")
-
-    if not st.session_state.result:
-        st.warning("No assessment yet. Please complete Patient Input first.")
-    else:
-        result = st.session_state.result
-        pred = result["prediction"]
-        probs = result["probabilities"]
-
-        if pred == "High":
-            st.markdown('<div class="risk-high"><div class="risk-number">HIGH</div><div class="risk-name">উচ্চ ঝুঁকি</div><p>Model-predicted class. This is not a diagnosis.</p></div>', unsafe_allow_html=True)
-        elif pred == "Moderate":
-            st.markdown('<div class="risk-mod"><div class="risk-number">MODERATE</div><div class="risk-name">মাঝারি ঝুঁকি</div><p>Model-predicted class. This is not a diagnosis.</p></div>', unsafe_allow_html=True)
+        p=st.session_state.patient_data
+        flags=clinical_flags(p)
+        st.markdown("### Instant clinical flags / দ্রুত clinical flags")
+        if flags:
+            fcols=st.columns(min(4,len(flags)))
+            for col,(name,msg,kind) in zip(fcols,flags):
+                with col:
+                    symbol="●"
+                    st.markdown(f'<div class="card"><div class="section-kicker">{symbol} {name}</div><b>{msg}</b></div>',unsafe_allow_html=True)
         else:
-            st.markdown('<div class="risk-low"><div class="risk-number">LOW</div><div class="risk-name">কম ঝুঁকি</div><p>Model-predicted class. This is not a diagnosis.</p></div>', unsafe_allow_html=True)
+            st.success("No predefined reference flag triggered / কোনো predefined reference flag trigger হয়নি।")
 
-        st.markdown("### Model probability / মডেল probability")
-        cols = st.columns(3)
-        for col, risk in zip(cols, ["High", "Moderate", "Low"]):
+# ============================================================
+# RISK RESULTS
+# ============================================================
+elif page=="Risk Results":
+    st.subheader("Risk Results / ঝুঁকির ফলাফল")
+    r=st.session_state.result
+
+    if not r:
+        st.info("Complete Patient Assessment first. / আগে Patient Assessment সম্পন্ন করুন।")
+    else:
+        pred=r["prediction"]
+        probs=r["probabilities"]
+        cls_name={"High":"HIGH RISK / উচ্চ ঝুঁকি","Moderate":"MODERATE RISK / মাঝারি ঝুঁকি","Low":"LOW RISK / কম ঝুঁকি"}.get(pred,pred)
+
+        css_class={"High":"risk-high","Moderate":"risk-moderate","Low":"risk-low"}.get(pred,"risk-moderate")
+        st.markdown(
+            f'<div class="risk-card {css_class}"><div class="risk-title">MODEL PREDICTION / মডেল পূর্বাভাস</div>'
+            f'<div class="risk-number">{cls_name}</div>'
+            f'<p style="color:#667085;margin-bottom:0">Statistical model output • Not a diagnosis</p></div>',
+            unsafe_allow_html=True
+        )
+
+        st.markdown("### Probability profile / Probability প্রোফাইল")
+        c1,c2,c3=st.columns(3)
+        for col,risk in zip([c1,c2,c3],["High","Moderate","Low"]):
             with col:
-                st.metric(risk, f"{probs.get(risk, 0):.2%}")
+                st.metric(f"{risk} Risk",f"{probs.get(risk,0):.2%}")
 
-        prob_df = pd.DataFrame({
-            "Risk": list(probs.keys()),
-            "Probability": list(probs.values())
-        }).sort_values("Probability", ascending=False)
-
-        st.bar_chart(prob_df.set_index("Risk"), y="Probability", use_container_width=True)
+        pdf=pd.DataFrame({"Risk":list(probs.keys()),"Probability":list(probs.values())}).sort_values("Probability",ascending=False)
+        st.bar_chart(pdf.set_index("Risk"),y="Probability",use_container_width=True)
 
         st.markdown("### Patient snapshot / রোগীর সারাংশ")
-        p = st.session_state.patient_data or {}
-        rows = []
-        for f, v in p.items():
-            bn, meaning, unit, ref = meta_text(f)
-            rows.append({
-                "Parameter": f,
-                "বাংলা নাম": bn,
-                "Value": v,
-                "Unit": unit,
-                "Reference / সাধারণ রেঞ্জ": ref
-            })
-        st.dataframe(pd.DataFrame(rows), use_container_width=True, hide_index=True)
+        p=st.session_state.patient_data or {}
+        rows=[]
+        for f,v in p.items():
+            bn,meaning,unit,ref=info(f)
+            rows.append({"Parameter":f,"বাংলা":bn,"Value":v,"Unit":unit,"Reference":ref})
+        st.dataframe(pd.DataFrame(rows),use_container_width=True,hide_index=True)
+
+        flags=clinical_flags(p)
+        if flags:
+            st.markdown("### Reference-based flags / Reference অনুযায়ী flags")
+            for name,msg,kind in flags:
+                if kind=="red": st.error(f"{name}: {msg}")
+                else: st.warning(f"{name}: {msg}")
+
+        st.markdown("### Export / রিপোর্ট সংরক্ষণ")
+        st.download_button(
+            "⬇️ Download assessment report",
+            data=report_text(),
+            file_name="personalised_healthcare_assessment.txt",
+            mime="text/plain",
+            use_container_width=True
+        )
 
         st.warning(
             "Research prototype only / শুধুমাত্র গবেষণার প্রোটোটাইপ। "
-            "Model probabilities are statistical outputs and are not causal treatment effects."
+            "Model probabilities are statistical outputs and should not be used alone for diagnosis or treatment."
         )
 
-elif page == "Reference Guide":
+# ============================================================
+# WHAT-IF SIMULATOR
+# ============================================================
+elif page=="What-if Simulator":
+    st.subheader("What-if Simulator / What-if বিশ্লেষণ")
+    st.caption("Explore model sensitivity by changing selected inputs. This is NOT a causal treatment simulator.")
+
+    r=st.session_state.result
+    p=st.session_state.patient_data
+
+    if not r or not p:
+        st.info("Complete a patient assessment first. / আগে patient assessment সম্পন্ন করুন।")
+    else:
+        st.markdown(
+            f'<div class="card"><div class="section-kicker">CURRENT MODEL OUTPUT</div>'
+            f'<h3>{r["prediction"]} Risk</h3>'
+            f'<p style="color:#667085">Change selected variables and compare the model output.</p></div>',
+            unsafe_allow_html=True
+        )
+
+        scenario=dict(p)
+        numeric_candidates=[f for f in ["LDL","HDL","Triglycerides","BMI","Systolic_BP","Diastolic_BP","Sleep_Hours","Physical_Activity_Level","Smoking_Status"] if f in features and f in p]
+
+        if not numeric_candidates:
+            st.info("No supported what-if variables are available in this model configuration.")
+        else:
+            a,b=st.columns(2)
+
+            if "LDL" in numeric_candidates:
+                with a:
+                    scenario["LDL"]=st.number_input("LDL — What-if / LDL পরিবর্তন",value=float(p["LDL"]),step=1.0,key="wf_ldl")
+            if "Triglycerides" in numeric_candidates:
+                with b:
+                    scenario["Triglycerides"]=st.number_input("Triglycerides — What-if / TG পরিবর্তন",value=float(p["Triglycerides"]),step=1.0,key="wf_tg")
+            if "BMI" in numeric_candidates:
+                with a:
+                    scenario["BMI"]=st.number_input("BMI — What-if / BMI পরিবর্তন",value=float(p["BMI"]),step=.1,key="wf_bmi")
+            if "Systolic_BP" in numeric_candidates:
+                with b:
+                    scenario["Systolic_BP"]=st.number_input("Systolic BP — What-if / BP পরিবর্তন",value=float(p["Systolic_BP"]),step=1.0,key="wf_sbp")
+            if "Smoking_Status" in numeric_candidates:
+                with a:
+                    scenario["Smoking_Status"]=st.selectbox("Smoking Status — What-if",CATS["Smoking_Status"],index=CATS["Smoking_Status"].index(p["Smoking_Status"]) if p["Smoking_Status"] in CATS["Smoking_Status"] else 0,key="wf_smoke")
+            if "Physical_Activity_Level" in numeric_candidates:
+                with b:
+                    scenario["Physical_Activity_Level"]=st.selectbox("Activity — What-if / সক্রিয়তা",CATS["Physical_Activity_Level"],index=CATS["Physical_Activity_Level"].index(p["Physical_Activity_Level"]) if p["Physical_Activity_Level"] in CATS["Physical_Activity_Level"] else 0,key="wf_activity")
+
+            X0=pd.DataFrame([{f:p.get(f,DEFAULTS.get(f,0)) for f in features}])[features]
+            X1=pd.DataFrame([{f:scenario.get(f,DEFAULTS.get(f,0)) for f in features}])[features]
+            base_probs=model.predict_proba(X0)[0]
+            new_probs=model.predict_proba(X1)[0]
+            base={c:float(v) for c,v in zip(classes,base_probs)}
+            new={c:float(v) for c,v in zip(classes,new_probs)}
+
+            st.markdown("### Before vs What-if / আগে বনাম পরিবর্তনের পর")
+            cols=st.columns(3)
+            for col,c in zip(cols,["High","Moderate","Low"]):
+                delta=(new.get(c,0)-base.get(c,0))*100
+                with col:
+                    st.metric(c,f"{new.get(c,0):.2%}",f"{delta:+.2f} pp")
+
+            compare=pd.DataFrame({
+                "Risk":classes,
+                "Baseline": [base.get(c,0) for c in classes],
+                "What-if":[new.get(c,0) for c in classes]
+            }).set_index("Risk")
+            st.bar_chart(compare,use_container_width=True)
+
+            st.info(
+                "Interpretation / ব্যাখ্যা: the displayed change is model sensitivity under altered inputs. "
+                "It does not establish that changing a variable will cause a clinical outcome."
+            )
+
+# ============================================================
+# REFERENCE GUIDE
+# ============================================================
+elif page=="Reference Guide":
     st.subheader("Reference Guide / রেফারেন্স গাইড")
-    st.caption("General educational reference information. Individual clinical targets may differ.")
+    st.caption("General educational references. Clinical interpretation can vary by person, laboratory, sex and context.")
 
-    ref_rows = []
+    search=st.text_input("Search term / টার্ম খুঁজুন",placeholder="e.g. LDL, BMI, blood pressure...")
+    rows=[]
     for f in features:
-        bn, meaning, unit, ref = meta_text(f)
-        ref_rows.append({
-            "Term": f,
-            "বাংলা": bn,
-            "Meaning / অর্থ": meaning,
-            "Unit": unit,
-            "Reference": ref
-        })
+        bn,meaning,unit,ref=info(f)
+        rows.append({"Term":f,"বাংলা":bn,"Meaning / অর্থ":meaning,"Unit":unit,"Reference":ref})
+    ref_df=pd.DataFrame(rows)
+    if search:
+        mask=ref_df.astype(str).apply(lambda x:x.str.contains(search,case=False,na=False)).any(axis=1)
+        ref_df=ref_df[mask]
+    st.dataframe(ref_df,use_container_width=True,hide_index=True,height=650)
 
-    st.dataframe(
-        pd.DataFrame(ref_rows),
-        use_container_width=True,
-        hide_index=True,
-        height=650
-    )
+    st.markdown("### Important terminology / গুরুত্বপূর্ণ টার্ম")
+    st.markdown("""
+    **PRS — Polygenic Risk Score:** multiple genetic variants combined into a statistical susceptibility score.  
+    **CVD — Cardiovascular Disease:** diseases affecting the heart and blood vessels / হৃদ্‌যন্ত্র ও রক্তনালীর রোগসমূহ।  
+    **T2D — Type 2 Diabetes:** a common form of diabetes / টাইপ-২ ডায়াবেটিস।  
+    **eGFR — estimated Glomerular Filtration Rate:** an estimate of kidney filtration.  
+    **HRV — Heart Rate Variability:** variation in time between heartbeats.
+    """)
 
-    st.info(
-        "Reference ranges are educational and context-dependent. "
-        "Genetic/PRS variables do not have universal clinical reference intervals."
+    st.warning(
+        "Reference ranges are educational and not a substitute for clinical assessment. "
+        "PRS/genetic variables have no universal clinical reference interval in this prototype."
     )
 
 # ============================================================
@@ -658,7 +726,7 @@ elif page == "Reference Guide":
 # ============================================================
 st.divider()
 st.markdown(
-    '<div class="footer-note">Personalised Healthcare Risk Assessment • '
-    'Bilingual AI Research Prototype • Not a diagnostic or treatment system</div>',
+    '<div class="footer">Personalised Healthcare Risk Assessment · AI/ML Research Prototype · '
+    'Bilingual Interface · Not a diagnostic or treatment system</div>',
     unsafe_allow_html=True
 )
